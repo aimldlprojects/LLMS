@@ -3,8 +3,9 @@
 Descriptive Part:
 "As a medical analyst and a doctor, I need to generate detailed narratives for a set of patient data, including treatments, drugs administered, reactions, patient height, weight, MedDRA codes related to drugs and treatment, and the primary consultant's report. Each patient's data is crucial for assessment, and we require comprehensive narratives for further analysis."
 
-Template: 
----
+Prompt Description:
+"As a medical analyst and a doctor, I have a set of patient data that requires detailed analysis and narrative generation. Below is the data I want to parse as input:
+
 Patient Data:
 - Patient Weight: {patientweight}
 - Patient Height: {patientheight}
@@ -36,6 +37,11 @@ Patient Data:
 - Drug Indication Primary Source: {drugindicationprimarysource}
 - Drug Indication MedDRA Code: {drugindicationmeddracode}
 - Clinical Narrative: {narrativeincludeclinical}
----
+
+Your task is to analyze this data and generate the output narrative in the following format:
+
 Submitted Narrative:
 "{narrativeincludeclinical}"
+
+Please provide additional descriptive information as needed to ensure a comprehensive narrative."
+
