@@ -24,3 +24,4 @@ def transform_fn(model, input_data, content_type, accept_type):
 if __name__ == "__main__":
     handler._initialize()
 
+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
