@@ -3,6 +3,8 @@ Goodluck
 
 r'"key1":\s*{"key2":\s*{"key3":\s*"([^"]+)"}}'
 
+r'\{(?:[^{}]|[^{}]*\{[^{}]*\}[^{}]*)*\}'
+
 def extract_json_from_string(input_string):
     # Define a regex pattern to match JSON content
     json_pattern = r'\{.*?\}'
