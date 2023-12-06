@@ -1,26 +1,21 @@
 Goodluck
 
 
-r'"key1":\s*{"key2":\s*{"key3":\s*"([^"]+)"}}'
+Flan-T5 Lesson Learned: Entity Extraction
 
-r'\{(?:[^{}]|[^{}]*\{[^{}]*\}[^{}]*)*\}'
+Flan-T5 didn't perform well in terms of entity extraction.
+Noted challenges in accurately identifying and extracting entities from the input text.
+Llama-2 Lesson Learned: Improved Entity Extraction
 
-def extract_json_from_string(input_string):
-    # Define a regex pattern to match JSON content
-    json_pattern = r'\{.*?\}'
+Llama-2 showed better results in entity extraction compared to Flan-T5.
+Acknowledged the improved capabilities of Llama-2 in handling entity-related tasks.
+Token Limit Challenge: Approaching Chunked Methods
 
-    # Find all matches of the pattern in the input string
-    matches = re.findall(json_pattern, input_string)
+Faced challenges related to token limits, particularly with large input texts.
+Addressed this challenge by implementing chunked methods to efficiently process and handle longer texts.
+Variation in LLM Response: Output Parsing and Few-Shot Methods
 
-    # Process each match (assuming there is only one JSON object in each match)
-    for match in matches:
-        # Print the matched JSON string
-        print("Matched JSON:", match)
-
-        # Parse the JSON string
-        try:
-            json_object = json.loads(match)
-            # Process the parsed JSON object as needed
-            print("Parsed JSON:", json_object)
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON: {e}")
+Experienced variations in the output of the language models.
+Implemented output parsing techniques to ensure consistency.
+Explored the use of few-shot methods to enhance the model's understanding and response stability.
+These lessons and challenges highlight the need for a nuanced approach, leveraging different language models based on their strengths and addressing specific limitations through creative solutions such as chunking methods, output parsing, and few-shot techniques.
