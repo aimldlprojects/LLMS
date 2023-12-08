@@ -1,140 +1,61 @@
 Goodluck
 
 
-Week 1: Environment Setup and Configuration
-Story 1: Set up & configure the development environment
-
-Estimated Time: 2 days
-Story 2: Installing necessary libraries
-
-Estimated Time: 1 day
-Story 3: Configure the Language Model (LLM)
-
-Estimated Time: 2 days
-Story 4: Configure the vector databases
-
-Estimated Time: 1 day
-Week 2: Data Preparation and Integration
-Story 5: Configure LangChain SQLAgent
-
-Estimated Time: 2 days
-Story 6: Data Validation
-
-Estimated Time: 2 days
-Story 7: Data Preprocessing
-
-Estimated Time: 2 days
-Story 8: Chunking
-
-Estimated Time: 1 day
-Week 3: Model Integration and Testing
-Story 9: Embedding & store the data in Vector DB
-
-Estimated Time: 2 days
-Story 10: Integrating LLM with LangChain
-
-Estimated Time: 3 days
-Story 11: Prompt Engineering Approach
-
-Estimated Time: 2 days
-Story 12: Create Prompt Engineering Template
-
-Estimated Time: 1 day
-Week 4: Testing, Deployment, and Finalization
-Story 13: Testing with prompt
-
-Estimated Time: 1 day
-Story 14: Inference and Evaluation
-
-Estimated Time: 2 days
-Story 15: UI Development
-
-Estimated Time: 3 days
-Story 16: Backend Integration
-
-Estimated Time: 2 days
-Story 17: End-to-End Testing
-
-Estimated Time: 2 days
-Story 18: Deployment
-
-Estimated Time: 1 day
-Additional Considerations:
-Buffer Time: Allocate 2-3 days as a buffer for unforeseen issues or adjustments.
-Keep in mind that these time estimates are approximate and can vary based on the complexity of your specific project and the team's expertise. Adjustments may be needed during the project's progression. Additionally, it's advisable to conduct regular sprint reviews and retrospectives to fine-tune the plan based on feedback and evolving requirements.
+def hello_world():
+    return "Hello, World!"
 
 
-Week 1: Environment Setup and Data Configuration
-Story 1: Set up & configure the development environment
+# model.py
+from hello_world import hello_world
 
-Estimated Time: 2 days
-Story 2: Installing necessary libraries
+class HelloWorldModel:
+    def predict(self):
+        return hello_world()
 
-Estimated Time: 1 day
-Story 3: Configure the Language Model (LLM)
+# Instantiate the model
+model = HelloWorldModel()
 
-Estimated Time: 2 days
-Story 4: Configure the vector databases
+# Save the model to disk (this is necessary for SageMaker)
+import joblib
+joblib.dump(model, 'model.joblib')
 
-Estimated Time: 2 days
-Story 5: Configure LangChain SQLAgent
 
-Estimated Time: 1 day
-Story 6: Create SQL database
+# deploy_script.py
+from sagemaker.sklearn import SKLearnModel
+from sagemaker import get_execution_role
+import sagemaker
 
-Estimated Time: 1 day
-Story 7: Import data into the database
+# Define the SageMaker execution role
+role = get_execution_role()
 
-Estimated Time: 1 day
-Story 8: Connect with Snowflake
+# Create a SageMaker session
+sagemaker_session = sagemaker.Session()
 
-Estimated Time: 1 day
-Story 9: Establish the connection and check its functionality
+# Define the S3 location for storing the model artifact
+model_s3_location = 's3://your-s3-bucket/model'
 
-Estimated Time: 1 day
-Week 2: Data Processing and Integration
-Story 10: Data Preprocessing
+# Upload the model to S3
+model_s3_path = sagemaker_session.upload_data(path='model.joblib', bucket='your-s3-bucket', key_prefix='model')
 
-Estimated Time: 2 days
-Story 11: Chunking
+# Create an SKLearnModel
+model = SKLearnModel(model_data=model_s3_path,
+                    role=role,
+                    entry_point='model.py',  # The script that loads your model
+                    source_dir='.',  # Directory containing your model script and dependencies
+                    framework_version='0.23-1')  # Your scikit-learn version
 
-Estimated Time: 1 day
-Story 12: Embedding & store the data in Vector DB
+# Deploy the model to an endpoint
+predictor = model.deploy(instance_type='ml.m4.xlarge', endpoint_name='hello-world-endpoint')
 
-Estimated Time: 2 days
-Story 13: Working with agents
 
-Estimated Time: 2 days
-Story 14: Integrating LLM with LangChain
+# Test the endpoint
+import boto3
+runtime = boto3.client('sagemaker-runtime')
 
-Estimated Time: 2 days
-Week 3: Prompt Engineering and System Testing
-Story 15: Prompt Engineering Approach
+response = runtime.invoke_endpoint(EndpointName='hello-world-endpoint',
+                                   ContentType='application/json',
+                                   Body='{}')
 
-Estimated Time: 1 day
-Story 16: Create Prompt Engineering Template
-
-Estimated Time: 1 day
-Story 17: Testing with prompt
-
-Estimated Time: 2 days
-Story 18: Inference and Evaluation
-
-Estimated Time: 2 days
-Week 4: System Development, Integration, and Deployment
-Story 19: UI Development
-
-Estimated Time: 3 days
-Story 20: Backend Integration
-
-Estimated Time: 2 days
-Story 21: End-to-End Testing
-
-Estimated Time: 2 days
-Story 22: Deployment
-
-Estimated Time: 1 day
-Additional Considerations:
-Buffer Time: Allocate 2-3 days as a buffer for unforeseen issues or adjustments.
-These estimates are approximate and can be adjusted based on your project's specific requirements and team expertise. Regular reviews and retrospectives will help refine the plan as the project progresses.
+result = response['Body'].read()
+print(result)
 
