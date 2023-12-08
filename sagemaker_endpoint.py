@@ -1,3 +1,45 @@
+# approach 1
+from sagemaker.sklearn import SKLearn
+from sagemaker import get_execution_role
+import sagemaker
+
+# Define the SageMaker execution role
+role = get_execution_role()
+
+# Create a SageMaker session
+sagemaker_session = sagemaker.Session()
+
+# Define the S3 location for storing the script
+script_s3_location = 's3://your-s3-bucket/scripts'
+
+# Upload the script to S3
+script_s3_path = sagemaker_session.upload_data(path='hello_world.py', bucket='your-s3-bucket', key_prefix='scripts')
+
+# Create an SKLearn estimator with a smaller instance type
+estimator = SKLearn(entry_point='hello_world.py',
+                    role=role,
+                    source_dir='.',
+                    framework_version='0.23-1',
+                    instance_type='ml.t2.micro',  # Use a smaller instance type
+                    sagemaker_session=sagemaker_session)
+
+# Deploy the script as an endpoint
+predictor = estimator.deploy(instance_type='ml.t2.micro', endpoint_name='hello-world-endpoint')
+
+# Assuming you have already deployed the endpoint and have the 'predictor' object
+
+# Sample input data
+input_data = '{"input": "sample_input_data"}'
+
+# Make a prediction using the deployed endpoint
+result = predictor.predict(input_data)
+
+# Print the result
+print(result)
+
+
+
+# Approach 2
 def hello_world():
     return "Hello, World!"
 
