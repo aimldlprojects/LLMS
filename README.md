@@ -1,6 +1,6 @@
 Goodluck
 
-
+"""
 import openai
 openai.api_type = "azure"
 openai.api_base = "https://rtappopenai.openai.azure.com/"
