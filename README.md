@@ -3,11 +3,9 @@
 
 
 
-strftime('%Y-%m-%d', substr(date_text, 7, 4) || '-' || substr(date_text, 1, 2) || '-' || substr(date_text, 4, 2))
-''')
+https://medium.com/dataherald/comparing-open-source-llms-for-nl-to-sql-53e6de42aee8
+https://www.numbersstation.ai/post/introducing-nsql-open-source-sql-copilot-foundation-models
+https://huggingface.co/NumbersStation/nsql-350M
+https://huggingface.co/NumbersStation
 
-
-cursor.execute('''
-    UPDATE your_table
-    SET date_text = strftime('%Y-%m-%d', substr(date_text, 7, 4) || '-' || substr(date_text, 1, 2) || '-' || substr(date_text, 4, 2))
-''')
+https://statics.teams.cdn.office.net/evergreen-assets/safelinks/1/atp-safelinks.html
