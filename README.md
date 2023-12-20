@@ -5,13 +5,41 @@
 """
 
 
-https://medium.com/dataherald/comparing-open-source-llms-for-nl-to-sql-53e6de42aee8
+pip install snowflake-connector-python
 
-https://www.numbersstation.ai/post/introducing-nsql-open-source-sql-copilot-foundation-models
+import snowflake.connector
 
-https://huggingface.co/NumbersStation/nsql-350M
+# Snowflake connection parameters
+account = 'your_account_url'
+warehouse = 'your_warehouse'
+database = 'your_database'
+schema = 'your_schema'
+username = 'your_username'
+password = 'your_password'
 
-https://huggingface.co/NumbersStation
+# Create a connection object
+conn = snowflake.connector.connect(
+    user=username,
+    password=password,
+    account=account,
+    warehouse=warehouse,
+    database=database,
+    schema=schema
+)
 
-https://statics.teams.cdn.office.net/evergreen-assets/safelinks/1/atp-safelinks.html
+# Create a cursor object
+cur = conn.cursor()
+
+# Execute a sample query
+cur.execute("SELECT CURRENT_DATE()")
+
+# Fetch the result
+result = cur.fetchone()
+print("Current date from Snowflake:", result[0])
+
+# Close the cursor and connection
+cur.close()
+conn.close()
+
+
 """
