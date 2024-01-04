@@ -1,30 +1,42 @@
-@app.get("/view/{document_key:path}")
-async def view_document(document_key: str):
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import logging
+
+app = FastAPI()
+
+# Enable CORS (Cross-Origin Resource Sharing)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this based on your frontend's domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Configure logging
+logging.basicConfig(filename="app.log", level=logging.INFO)
+
+# Pydantic model for the incoming JSON payload
+class Payload(BaseModel):
+    data: str
+
+# API endpoint to receive JSON payload and write to log file
+@app.post("/receive-payload")
+def receive_payload(payload: Payload):
     try:
-        # Decode URL-encoded characters
-        document_key = unquote(document_key)
+        # Log the received data
+        logging.info(f"Received payload: {payload.data}")
 
-        # Assuming the document_key is the S3 object key
-        response = s3_connector().get_object(Bucket=bucket_name, Key=document_key)
+        # Additional processing logic can be added here
 
-        # Log additional details about the S3 request
-        print(f"S3 Request Details: {response}")
-
-        file_content = response['Body'].read()
-        filename = document_key.split("/")[-1]
-
-        # Encode the file content to base64
-        encoded_content = base64.b64encode(file_content).decode('utf-8')
-
-        # If you want the document to be viewed in the browser
-        media_type, _ = mimetypes.guess_type(filename)
-        headers = {"Content-Disposition": f"inline; filename={filename}"}
-
-        return StreamingResponse(content=iter([encoded_content]), media_type=media_type, headers=headers)
-
+        return {"message": "Payload received successfully"}
     except Exception as e:
-        # Add logging to print the error and relevant information
-        print(f"Error viewing document - Document Key: {document_key}, Error: {str(e)}")
-        raise HTTPException(status_code=404, detail="Document not found")
-Collapse
-has context menu
+        logging.error(f"Error processing payload: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+# Run the FastAPI application
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)
