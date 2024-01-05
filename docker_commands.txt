@@ -1,0 +1,79 @@
+# red hat linux enterprise version
+  Install docker:
+    sudo yum install -y docker
+    sudo systemctl start docker
+    sudo systemctl enable docker
+  Dockerfile: 
+    Steps to Dockerize Python Application:
+    Create a file named Dockerfile in your Python project's root directory with the following content:
+      # Use the official Python image from the Red Hat Container Catalog as the base image
+          FROM registry.redhat.io/rhel8/python-39
+      
+      # Set the working directory inside the container
+          WORKDIR /app
+      
+      # Copy the requirements.txt file into the container at /app
+          COPY requirements.txt /app/
+      
+      # Install any dependencies specified in requirements.txt
+          RUN pip install --no-cache-dir -r requirements.txt
+      
+      # Copy the rest of the application code into the container
+          COPY . /app/
+      
+      # Set environment variables (if needed)
+          ENV MY_VARIABLE=value
+      
+      # Expose the port your app runs on (if applicable)
+          EXPOSE 5000
+      
+      # Define the command to run your application
+          CMD ["python", "app.py"]
+
+requirements.txt File:
+      Create a file named requirements.txt in your project's root directory and list your Python dependencies:
+
+Build the Docker Image:
+      sudo docker build -t your-image-name:tag .
+
+
+      
+# install utils
+      yum install -y yum-utils
+# Install docker latest container
+  yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin 
+# Status of docker
+      service docker status
+# Enable docker
+      systemctl enable --now docker
+# check docker images
+      docker images
+
+# login to root user
+	sudo su
+# Update linux packages
+	sudo yum update -y
+# dependencies
+	yum -y install 1vm2 device-mapper
+	device-mapper-persistent-data
+	device-mapper-event device-mapper-libs
+	device-mapper-event-libs
+# download repo file from centos docker website
+curl https://download.docker.com/linux/centos/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo
+# install docker
+	yum install docker-ce
+# start docker
+	systemctl start docker
+# enable docker 
+	systemctl enable docker
+# docker status
+	systemctl status docker
+# docker images
+	show available docker images
+# pull the img from docker
+	docker pull image_name
+# Create a container from image
+	docker run -it image_name /bin/bash
+# 
+
+      
