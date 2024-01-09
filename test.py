@@ -1,5 +1,6 @@
 import streamlit as st
-import requests
+import boto3
+import json
 
 # Streamlit app title and header
 st.title("OpenAI Playground")
@@ -13,9 +14,12 @@ temperature = st.slider("Temperature", min_value=0.1, max_value=1.0, value=0.8, 
 
 # Button to generate text
 if st.button("Generate Text"):
-    # API endpoint and parameters
-    api_endpoint = "YOUR_API_ENDPOINT"  # Replace with your actual API endpoint
-    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    # SageMaker endpoint details
+    endpoint_name = "meta-textgeneration-llama-2-7b-f-2023-11-09-14-39-45-878"  # Replace with your actual endpoint name
+    region_name = "us-east-2"  # Replace with your actual region
+
+    # SageMaker client
+    client = boto3.client("sagemaker-runtime", region_name=region_name)
 
     # Payload
     payload = {
@@ -25,13 +29,25 @@ if st.button("Generate Text"):
         "parameters": {"max_new_tokens": max_new_tokens, "top_p": top_p, "temperature": temperature},
     }
 
-    # Make API request
-    response = requests.post(api_endpoint, headers=headers, json=payload)
+    # Encode payload to JSON
+    encoded_json = json.dumps(payload).encode("utf-8")
 
-    # Display generated text
-    if response.status_code == 200:
-        generated_text = response.json()[0]["generation"]["content"]
-        st.subheader("Generated Text:")
-        st.write(generated_text)
-    else:
-        st.error(f"Error: {response.status_code} - {response.text}")
+    # Make API request
+    try:
+        response = client.invoke_endpoint(
+            EndpointName=endpoint_name,
+            ContentType="application/json",
+            Body=encoded_json,
+            CustomAttributes='accept_eula=true',
+        )
+
+        # Display generated text
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            result = json.loads(response["Body"].read())
+            generated_text = result[0]["generation"]["content"]
+            st.subheader("Generated Text:")
+            st.write(generated_text)
+        else:
+            st.error(f"Error: {response['ResponseMetadata']['HTTPStatusCode']} - {response['Body'].read()}")
+    except Exception as e:
+        st.error(f"Error: {e}")
