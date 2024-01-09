@@ -1,42 +1,37 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import logging
+import streamlit as st
+import requests
 
-app = FastAPI()
+# Streamlit app title and header
+st.title("OpenAI Playground")
 
-# Enable CORS (Cross-Origin Resource Sharing)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust this based on your frontend's domain
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Input controls
+prompt = st.text_area("Enter your prompt:", "Which drugs are used for red eye")
 
-# Configure logging
-logging.basicConfig(filename="app.log", level=logging.INFO)
+max_new_tokens = st.slider("Max New Tokens", min_value=1, max_value=1000, value=512)
+top_p = st.slider("Top P", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
+temperature = st.slider("Temperature", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
 
-# Pydantic model for the incoming JSON payload
-class Payload(BaseModel):
-    data: str
+# Button to generate text
+if st.button("Generate Text"):
+    # API endpoint and parameters
+    api_endpoint = "YOUR_API_ENDPOINT"  # Replace with your actual API endpoint
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-# API endpoint to receive JSON payload and write to log file
-@app.post("/receive-payload")
-def receive_payload(payload: Payload):
-    try:
-        # Log the received data
-        logging.info(f"Received payload: {payload.data}")
+    # Payload
+    payload = {
+        "inputs": [
+            [{"role": "user", "content": prompt}]
+        ],
+        "parameters": {"max_new_tokens": max_new_tokens, "top_p": top_p, "temperature": temperature},
+    }
 
-        # Additional processing logic can be added here
+    # Make API request
+    response = requests.post(api_endpoint, headers=headers, json=payload)
 
-        return {"message": "Payload received successfully"}
-    except Exception as e:
-        logging.error(f"Error processing payload: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-
-# Run the FastAPI application
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Display generated text
+    if response.status_code == 200:
+        generated_text = response.json()[0]["generation"]["content"]
+        st.subheader("Generated Text:")
+        st.write(generated_text)
+    else:
+        st.error(f"Error: {response.status_code} - {response.text}")
