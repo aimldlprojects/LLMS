@@ -2,15 +2,27 @@ import streamlit as st
 import boto3
 import json
 
+# Set page layout
+st.set_page_config(layout="wide")
+
 # Streamlit app title and header
 st.title("OpenAI Playground")
 
-# Input controls
-prompt = st.text_area("Enter your prompt:", "Which drugs are used for red eye")
+# Define columns for layout
+col1, col2 = st.beta_columns([3, 1])  # Adjust the ratio as needed
 
-max_new_tokens = st.slider("Max New Tokens", min_value=1, max_value=1000, value=512)
-top_p = st.slider("Top P", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
-temperature = st.slider("Temperature", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+# Input controls in the left column
+with col1:
+    prompt = st.text_area("Enter your prompt:", "Which drugs are used for red eye")
+
+    max_new_tokens = st.slider("Max New Tokens", min_value=1, max_value=1000, value=512)
+    top_p = st.slider("Top P", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
+    temperature = st.slider("Temperature", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+
+# Output panel in the top right
+with col2:
+    st.subheader("Generated Text:")
+    generated_text_placeholder = st.empty()  # Placeholder for generated text
 
 # Button to generate text
 if st.button("Generate Text"):
@@ -45,9 +57,11 @@ if st.button("Generate Text"):
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
             result = json.loads(response["Body"].read())
             generated_text = result[0]["generation"]["content"]
-            st.subheader("Generated Text:")
-            st.write(generated_text)
+            generated_text_placeholder.write(generated_text)
         else:
             st.error(f"Error: {response['ResponseMetadata']['HTTPStatusCode']} - {response['Body'].read()}")
     except Exception as e:
         st.error(f"Error: {e}")
+
+# Chat box at the bottom
+chat_box = st.text_area("Chat Box:")
