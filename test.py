@@ -1,67 +1,52 @@
-import streamlit as st
-import boto3
-import json
+[4:38 PM] Suresh Kamakshigari
+def update_json_values(json1, json2):     # Iterate through each item in json2    for item in json2:         # Check if the detected language is not English        if item['detected_language'] != 'English':             # Extract the tag, original text, and translated text            tag = item['tag']             original_text = item['original_text']             translated_text = item['translated_text']             # Define a function to recursively search and replace values in json1            def update_recursive(d, key, old_value, new_value):                 if isinstance(d, dict):                     for k, v in d.items():                         if isinstance(v, (dict, list)):                             update_recursive(v, key, old_value, new_value)                         elif k == key and v == old_value:                             d[k] = new_value                 elif isinstance(d, list):                     for item in d:                         if isinstance(item, (dict, list)):                             update_recursive(item, key, old_value, new_value)             # Update json1 with the new value            update_recursive(json1, tag, original_text, translated_text)     return json1
+ 
+ 
+[4:40 PM] Suresh Kamakshigari
+def update_json_values(json1, json2):
 
-# Set page layout
-st.set_page_config(layout="wide")
+    # Iterate through each item in json2
 
-# Streamlit app title and header
-st.title("OpenAI Playground")
+    for item in json2:
 
-# Define columns for layout
-col1, col2 = st.beta_columns([3, 1])  # Adjust the ratio as needed
+        # Check if the detected language is not English
 
-# Input controls in the left column
-with col1:
-    prompt = st.text_area("Enter your prompt:", "Which drugs are used for red eye")
+        if item['detected_language'] != 'English':
 
-    max_new_tokens = st.slider("Max New Tokens", min_value=1, max_value=1000, value=512)
-    top_p = st.slider("Top P", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
-    temperature = st.slider("Temperature", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+            # Extract the tag, original text, and translated text
 
-# Output panel in the top right
-with col2:
-    st.subheader("Generated Text:")
-    generated_text_placeholder = st.empty()  # Placeholder for generated text
+            tag = item['tag']
 
-# Button to generate text
-if st.button("Generate Text"):
-    # SageMaker endpoint details
-    endpoint_name = "meta-textgeneration-llama-2-7b-f-2023-11-09-14-39-45-878"  # Replace with your actual endpoint name
-    region_name = "us-east-2"  # Replace with your actual region
+            original_text = item['original_text']
 
-    # SageMaker client
-    client = boto3.client("sagemaker-runtime", region_name=region_name)
+            translated_text = item['translated_text']
+ 
+            # Define a function to recursively search and replace values in json1
 
-    # Payload
-    payload = {
-        "inputs": [
-            [{"role": "user", "content": prompt}]
-        ],
-        "parameters": {"max_new_tokens": max_new_tokens, "top_p": top_p, "temperature": temperature},
-    }
+            def update_recursive(d, key, old_value, new_value):
 
-    # Encode payload to JSON
-    encoded_json = json.dumps(payload).encode("utf-8")
+                if isinstance(d, dict):
 
-    # Make API request
-    try:
-        response = client.invoke_endpoint(
-            EndpointName=endpoint_name,
-            ContentType="application/json",
-            Body=encoded_json,
-            CustomAttributes='accept_eula=true',
-        )
+                    for k, v in d.items():
 
-        # Display generated text
-        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            result = json.loads(response["Body"].read())
-            generated_text = result[0]["generation"]["content"]
-            generated_text_placeholder.write(generated_text)
-        else:
-            st.error(f"Error: {response['ResponseMetadata']['HTTPStatusCode']} - {response['Body'].read()}")
-    except Exception as e:
-        st.error(f"Error: {e}")
+                        if isinstance(v, (dict, list)):
 
-# Chat box at the bottom
-chat_box = st.text_area("Chat Box:")
+                            update_recursive(v, key, old_value, new_value)
+
+                        elif k == key and v == old_value:
+
+                            d[k] = new_value
+ 
+                elif isinstance(d, list):
+
+                    for item in d:
+
+                        if isinstance(item, (dict, list)):
+
+                            update_recursive(item, key, old_value, new_value)
+ 
+            # Update json1 with the new value
+
+            update_recursive(json1, tag, original_text, translated_text)
+ 
+    return json1
