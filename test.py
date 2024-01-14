@@ -1,52 +1,5 @@
-[4:38 PM] Suresh Kamakshigari
-def update_json_values(json1, json2):     # Iterate through each item in json2    for item in json2:         # Check if the detected language is not English        if item['detected_language'] != 'English':             # Extract the tag, original text, and translated text            tag = item['tag']             original_text = item['original_text']             translated_text = item['translated_text']             # Define a function to recursively search and replace values in json1            def update_recursive(d, key, old_value, new_value):                 if isinstance(d, dict):                     for k, v in d.items():                         if isinstance(v, (dict, list)):                             update_recursive(v, key, old_value, new_value)                         elif k == key and v == old_value:                             d[k] = new_value                 elif isinstance(d, list):                     for item in d:                         if isinstance(item, (dict, list)):                             update_recursive(item, key, old_value, new_value)             # Update json1 with the new value            update_recursive(json1, tag, original_text, translated_text)     return json1
- 
- 
-[4:40 PM] Suresh Kamakshigari
-def update_json_values(json1, json2):
-
-    # Iterate through each item in json2
-
-    for item in json2:
-
-        # Check if the detected language is not English
-
-        if item['detected_language'] != 'English':
-
-            # Extract the tag, original text, and translated text
-
-            tag = item['tag']
-
-            original_text = item['original_text']
-
-            translated_text = item['translated_text']
- 
-            # Define a function to recursively search and replace values in json1
-
-            def update_recursive(d, key, old_value, new_value):
-
-                if isinstance(d, dict):
-
-                    for k, v in d.items():
-
-                        if isinstance(v, (dict, list)):
-
-                            update_recursive(v, key, old_value, new_value)
-
-                        elif k == key and v == old_value:
-
-                            d[k] = new_value
- 
-                elif isinstance(d, list):
-
-                    for item in d:
-
-                        if isinstance(item, (dict, list)):
-
-                            update_recursive(item, key, old_value, new_value)
- 
-            # Update json1 with the new value
-
-            update_recursive(json1, tag, original_text, translated_text)
- 
-    return json1
+Act as a medical reviewer and generate a comprehensive medical narrative based on the provided patient data. This includes the patient's medical history, treatment procedures, and therapeutic measures undertaken to address their condition. Utilize specific medical terms and phrases such as "spinal cord injury," "myocarditis," "multiple sclerosis flare," "neuralgia," "instability gait," "myalgia," "malaise," "injection site erythema," "pyrexia," "hyperpyrexia," and "bacterial infection" to convey the information effectively.
+Describe the symptoms and drug reactions experienced by the patient, such as a "huge rash," "chest pain," "chills," "fever," "muscular weakness," "headache," "generalized joint pain," "fatigue," "injection site warmth," "injection site pain," "injection site swelling," and other relevant details. Include information about concomitant medications like "paracetamol," the patient's vaccination history specifying the type of vaccine, dose, and administration date, as well as pertinent laboratory results like body temperature, white blood cell count, and blood culture at the time of vaccination.
+Provide patient details, including age, gender, height, and weight, to assess potential reactions to the vaccine. Incorporate adverse event terminology, distinguishing between "serious" and "non-serious" events. Include the lot/batch number of the administered vaccine and regulatory numbers, ensuring the provision of other case identifiers for thorough documentation.
+During language translation, convert any query data in Dutch or Portuguese to English for clarity. Focus solely on the actual data available in the given query, avoiding the inclusion of additional notes at the beginning or end of the narrative. Summarize key points and utilize the same format as the submitted narrative in the provided examples.
+For instance, if the input query involves a patient aged 49 with heavy menstrual bleeding after receiving the COVID-19 Pfizer vaccine, the narrative would outline the relevant details, adhering to the specified criteria without introducing unnecessary notes or information.
