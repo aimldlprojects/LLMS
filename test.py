@@ -1,5 +1,35 @@
-Act as a medical reviewer and generate a comprehensive medical narrative based on the provided patient data. This includes the patient's medical history, treatment procedures, and therapeutic measures undertaken to address their condition. Utilize specific medical terms and phrases such as "spinal cord injury," "myocarditis," "multiple sclerosis flare," "neuralgia," "instability gait," "myalgia," "malaise," "injection site erythema," "pyrexia," "hyperpyrexia," and "bacterial infection" to convey the information effectively.
-Describe the symptoms and drug reactions experienced by the patient, such as a "huge rash," "chest pain," "chills," "fever," "muscular weakness," "headache," "generalized joint pain," "fatigue," "injection site warmth," "injection site pain," "injection site swelling," and other relevant details. Include information about concomitant medications like "paracetamol," the patient's vaccination history specifying the type of vaccine, dose, and administration date, as well as pertinent laboratory results like body temperature, white blood cell count, and blood culture at the time of vaccination.
-Provide patient details, including age, gender, height, and weight, to assess potential reactions to the vaccine. Incorporate adverse event terminology, distinguishing between "serious" and "non-serious" events. Include the lot/batch number of the administered vaccine and regulatory numbers, ensuring the provision of other case identifiers for thorough documentation.
-During language translation, convert any query data in Dutch or Portuguese to English for clarity. Focus solely on the actual data available in the given query, avoiding the inclusion of additional notes at the beginning or end of the narrative. Summarize key points and utilize the same format as the submitted narrative in the provided examples.
-For instance, if the input query involves a patient aged 49 with heavy menstrual bleeding after receiving the COVID-19 Pfizer vaccine, the narrative would outline the relevant details, adhering to the specified criteria without introducing unnecessary notes or information.
+import xml.etree.ElementTree as ET
+
+# Sample XML string (replace this with your XML content)
+xml_string = '''
+<root>
+    <person>
+        <name>John</name>
+        <details>
+            <age>30</age>
+            <city>New York</city>
+        </details>
+    </person>
+</root>
+'''
+
+# Parse the XML string
+root = ET.fromstring(xml_string)
+
+# Define the nested structure of the key (e.g., 'person/details/age')
+nested_keys = ['person', 'details', 'age']
+
+# Extract nested key-value pair
+nested_value = root
+for key in nested_keys:
+    nested_value = nested_value.find(key)
+    if nested_value is None:
+        break
+
+# Print the result
+if nested_value is not None:
+    key = '/'.join(nested_keys)
+    value = nested_value.text
+    print(f"{key}: {value}")
+else:
+    print("Key not found")
