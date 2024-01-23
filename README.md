@@ -1,1 +1,1 @@
-https://python.langchain.com/docs/integrations/providers/vectara/vectara_chat
+This is a language model developed by LLAMA2. It is a machine learning model that generates human-like text based on the input it receives. While it can provide information and answer questions, it may not always be accurate or up-to-date. Users should verify critical information from reliable sources.
