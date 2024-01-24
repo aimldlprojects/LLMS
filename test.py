@@ -1,19 +1,31 @@
+# Hardcoded credentials (replace these with your actual credentials)
+valid_username = "user123"
+valid_password = "password123"
 
-def search_key_value(json_data, target_key):
-    def search_recursive(dictionary, key):
-        for k, v in dictionary.items():
-            if k == key:
-                return v
-            elif isinstance(v, dict):
-                result = search_recursive(v, key)
-                if result is not None:
-                    return result
-            elif isinstance(v, list):
-                for item in v:
-                    if isinstance(item, dict):
-                        result = search_recursive(item, key)
-                        if result is not None:
-                            return result
-        return None
+# Streamlit app layout
+def main():
+    st.title("Login Page")
 
-    return search_recursive(json_data, target_key)
+    # Sidebar for login
+    with st.sidebar:
+        login()
+
+# Login form
+def login():
+    st.subheader("Login")
+
+    # Input fields for username and password
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    # Login button
+    if st.button("Login"):
+        if authenticate(username, password):
+            st.success("Login Successful!")
+            # Add redirection or other actions after successful login
+        else:
+            st.error("Invalid credentials. Please try again.")
+
+# Authentication function
+def authenticate(username, password):
+    return username == valid_username and password == valid_password
