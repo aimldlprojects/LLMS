@@ -1,28 +1,39 @@
-Granting Access to the Windows Server
-1. Access Requirements:
-To access the Windows Server, users must have an account under amer.pfizer.com or apac.pfizer.com.
-2. Adding Users to Remote Desktop Users Group:
-Open "lusrmgr.msc" (Local Users and Groups) on the Windows Server.
+**Title: A Step-by-Step Guide to Setting Up User Access to AWS SageMaker at Pfizer**
 
-Navigate to "Groups" and then locate "Remote Desktop Users."
+In this blog post, we will walk through the process of setting up user access to AWS SageMaker at Pfizer. Access to SageMaker is managed through specific roles, and users need to be assigned the role PFE-RAPID-CUSTOMER-ADMIN-SSO. Let's dive into the steps to grant this access.
 
-Click "Add" to add users to the group.
+## Step 1: Accessing the Request Manager
 
-Click "Add" again and ensure that "Locations" is set to the specified location (amer.pfizer.com or apac.pfizer.com).
+1. Open your web browser and navigate to [requestmanager.pfizer.com](https://requestmanager.pfizer.com).
 
-Enter the usernames you want to add, click "Check Names" to verify, and then click "OK."
+2. Click on "Group Manager" in the navigation menu.
 
-Confirm by clicking "OK" to add the selected users to the "Remote Desktop Users" group.
+3. Select "Security Groups" from the options.
 
-Accessing the Windows Server
-Once the users are added to the "Remote Desktop Users" group, they can access the Windows Server using Remote Desktop Connection:
+## Step 2: Requesting Access to the SageMaker Role
 
-Open "Remote Desktop Connection" on your local machine.
+1. Search for the security group named "CUSPFE-RAPID-WWS-SAGEMAKER-SSO_859368700107_PFE-AWS-PROD."
 
-Enter the IP address or hostname of the Windows Server.
+2. Click on "Request Access" next to the identified security group.
 
-Use the credentials associated with the amer.pfizer.com or apac.pfizer.com accounts to log in.
+3. Enter your NTID or email in the search bar and click "Save."
 
-You should now have remote access to the Windows Server.
+4. Click on "View Cart" to review your access request.
 
-By following these steps, you've successfully set up a Windows Server with the required software and granted access to users from specified Pfizer accounts. This configuration ensures a secure and efficient environment for development and other server-related tasks.
+5. Submit the request from your cart.
+
+## Step 3: Approval and Login
+
+1. Await approval from the owners of the AWS account associated with the SageMaker role.
+
+2. Once approved, you can log in using [awsprodv2.pfizer.com](https://awsprodv2.pfizer.com) and your Single Sign-On (SSO) credentials.
+
+## Conclusion
+
+By following these steps, you have successfully requested and gained access to AWS SageMaker at Pfizer. This access is crucial for leveraging the power of SageMaker in machine learning projects and other data science initiatives within the Pfizer ecosystem.
+
+Remember to handle your access requests responsibly, adhering to Pfizer's security policies and guidelines. If you encounter any issues during the process, consider reaching out to your IT support or the appropriate contacts at Pfizer for assistance.
+
+Now you're ready to explore the capabilities of AWS SageMaker and contribute to cutting-edge projects within Pfizer's digital landscape.
+
+Happy coding and data science exploration!
