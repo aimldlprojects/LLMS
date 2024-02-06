@@ -1,25 +1,27 @@
-def get_key_value_pairs(nested_dict, prefix=''):
+def get_value_by_key(nested_dict, key):
     """
-    Recursively extract key-value pairs from a nested dictionary.
+    Recursively search for a key in a nested dictionary and return its value.
     
     Args:
-    nested_dict (dict): The nested dictionary to extract key-value pairs from.
-    prefix (str): Optional. Prefix to add to keys. Used for recursive calls.
+    nested_dict (dict): The nested dictionary to search in.
+    key (str): The key to search for.
     
     Returns:
-    list: List of key-value pairs.
+    str: The value corresponding to the key, or None if the key is not found.
     """
-    key_value_pairs = []
-    
-    for key, value in nested_dict.items():
-        if isinstance(value, dict):
-            # If the value is a dictionary, recursively call the function with the nested dictionary
-            key_value_pairs.extend(get_key_value_pairs(value, prefix + key + '_'))
-        else:
-            # If the value is not a dictionary, add the key-value pair to the list
-            key_value_pairs.append((prefix + key, value))
-    
-    return key_value_pairs
+    # Loop through the items in the dictionary
+    for k, v in nested_dict.items():
+        # If the current item's key matches the desired key, return its value
+        if k == key:
+            return v
+        # If the current item's value is another dictionary, recursively search within it
+        elif isinstance(v, dict):
+            result = get_value_by_key(v, key)
+            # If the key is found in the nested dictionary, return its value
+            if result is not None:
+                return result
+    # If the key is not found in the dictionary or any nested dictionaries, return None
+    return None
 
 # Example nested dictionary
 nested_dict = {
@@ -31,9 +33,11 @@ nested_dict = {
     }
 }
 
-# Get key-value pairs from the nested dictionary
-key_value_pairs = get_key_value_pairs(nested_dict)
+# Example key to search for
+key_to_search = 'city'
 
-# Print key-value pairs
-for key, value in key_value_pairs:
-    print(f'{key}: {value}')
+# Get the value corresponding to the key
+value = get_value_by_key(nested_dict, key_to_search)
+
+# Print the result
+print(value)
