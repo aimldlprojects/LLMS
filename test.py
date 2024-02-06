@@ -1,9 +1,9 @@
-def get_key_value_pairs(json_obj, prefix=''):
+def get_key_value_pairs(nested_dict, prefix=''):
     """
-    Recursively extract key-value pairs from a nested JSON object.
+    Recursively extract key-value pairs from a nested dictionary.
     
     Args:
-    json_obj (dict): The JSON object to extract key-value pairs from.
+    nested_dict (dict): The nested dictionary to extract key-value pairs from.
     prefix (str): Optional. Prefix to add to keys. Used for recursive calls.
     
     Returns:
@@ -11,7 +11,7 @@ def get_key_value_pairs(json_obj, prefix=''):
     """
     key_value_pairs = []
     
-    for key, value in json_obj.items():
+    for key, value in nested_dict.items():
         if isinstance(value, dict):
             # If the value is a dictionary, recursively call the function with the nested dictionary
             key_value_pairs.extend(get_key_value_pairs(value, prefix + key + '_'))
@@ -21,8 +21,8 @@ def get_key_value_pairs(json_obj, prefix=''):
     
     return key_value_pairs
 
-# Example JSON data
-nested_json = {
+# Example nested dictionary
+nested_dict = {
     'name': 'John',
     'age': 30,
     'address': {
@@ -31,8 +31,8 @@ nested_json = {
     }
 }
 
-# Get key-value pairs from the nested JSON
-key_value_pairs = get_key_value_pairs(nested_json)
+# Get key-value pairs from the nested dictionary
+key_value_pairs = get_key_value_pairs(nested_dict)
 
 # Print key-value pairs
 for key, value in key_value_pairs:
