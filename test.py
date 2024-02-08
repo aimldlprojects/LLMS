@@ -1,25 +1,17 @@
-import requests
+import os
+import io
+import boto3
 import json
-
-# Replace 'YOUR_GATEWAY_URL' with the actual URL of your AWS Gateway endpoint
-gateway_url = 'YOUR_GATEWAY_URL'
-
-# Example payload (if needed)
-payload = {
-    "key": "value"
-}
-
-try:
-    # Make a POST request to the AWS Gateway endpoint
-    response = requests.post(gateway_url, json=payload)
-
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Print the response from the endpoint
-        print(response.json())
-    else:
-        # Print an error message if the request was not successful
-        print("Error:", response.text)
-except Exception as e:
-    # Print any exceptions that occur during the request
-    print("Exception:", e)
+# grab environment variables
+ENDPOINT_NAME = os.environ['endpoint_name']
+runtime= boto3.client('runtime.sagemaker')
+def lambda_handler(event, context):
+	response = runtime.invoke_endpoint(EndpointName=ENDPOINT_NAME,
+				ContentType='application/json',
+				Body=event['body'],
+				CustomAttributes="accept_eula=true")
+	result = json.loads(response['Body'].read().decode())
+	return {
+			"statusCode": 200
+			"body": json.dumps(result)
+			}
