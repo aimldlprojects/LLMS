@@ -8,4 +8,7 @@ vectorstore.add_documents(documents, namespace=USER_1)
 retriever = vectorstore.as_retriever(search_type="similarity_score_threshold", search_kwargs={"namespace": USER_1, "score_threshold": .9})
 relevant_documents = retriever.get_relevant_documents(question)
 
+#RAG - MultiVectorRetriever with documents & Tables
+https://github.com/sugarforever/Advanced-RAG/blob/main/01_semi_structured_data.ipynb
+
 
