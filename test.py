@@ -1,19 +1,25 @@
-import xml.etree.ElementTree as ET
+from pymongo import MongoClient
+import certifi
 
-def replace_xml_value(xml_file, tag, new_value):
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
+# Your DocumentDB endpoint
+db_endpoint = 'your-documentdb-cluster-endpoint:27017'
 
-    # Find the element with the specified tag
-    for elem in root.iter(tag):
-        elem.text = new_value
+# Your database name
+db_name = 'your_database_name'
 
-    # Write the modified XML back to file
-    tree.write(xml_file)
+# Credentials
+username = 'your_username'
+password = 'your_password'
 
-# Example usage:
-xml_file_path = "example.xml"
-tag_to_replace = "value"
-new_value = "new_value"
+# Connection string
+connection_string = f"mongodb://{username}:{password}@{db_endpoint}/?ssl=true&replicaSet=rs0&readpreference=secondaryPreferred&retryWrites=false"
 
-replace_xml_value(xml_file_path, tag_to_replace, new_value)
+# Connect to your DocumentDB cluster
+client = MongoClient(connection_string, tlsCAFile=certifi.where())
+
+# Specify the database to use
+db = client[db_name]
+
+# Now you can interact with your database
+# For example, listing the collections
+print(db.list_collection_names())
