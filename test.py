@@ -23,3 +23,14 @@ db = client[db_name]
 # Now you can interact with your database
 # For example, listing the collections
 print(db.list_collection_names())
+
+
+# Define the collection
+collection = db['test_collection']
+
+# Insert a document
+document = {"name": "John Doe", "email": "john@example.com"}
+insert_result = collection.insert_one(document)
+
+print(f"Document ID: {insert_result.inserted_id}")
+
