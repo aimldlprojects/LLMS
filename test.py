@@ -1,22 +1,16 @@
 import json
 
-def read_ndjson(file_path):
-    """
-    Read NDJSON file.
-    
-    Args:
-        file_path (str): Path to the NDJSON file.
-        
-    Returns:
-        list: List of dictionaries containing data from the NDJSON file.
-    """
-    data = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            data.append(json.loads(line))
-    return data
+def replace_nan_with_null(ndjson_file, output_file):
+    with open(ndjson_file, 'r') as infile, open(output_file, 'w') as outfile:
+        for line in infile:
+            record = json.loads(line)
+            # Replace NaN with null
+            for key, value in record.items():
+                if value != value:  # Check for NaN
+                    record[key] = None
+            # Write the updated record to the output file
+            json.dump(record, outfile)
+            outfile.write('\n')
 
 # Example usage
-ndjson_file = 'data.ndjson'
-data = read_ndjson(ndjson_file)
-print(data)
+replace_nan_with_null('data.ndjson', 'data_with_null.ndjson')
