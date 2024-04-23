@@ -1,21 +1,22 @@
-import pandas as pd
+import json
 
-def csv_to_ndjson(csv_file, ndjson_file):
+def read_ndjson(file_path):
     """
-    Convert CSV file to NDJSON format.
+    Read NDJSON file.
     
     Args:
-        csv_file (str): Path to the CSV file.
-        ndjson_file (str): Path to the NDJSON file to save.
+        file_path (str): Path to the NDJSON file.
+        
+    Returns:
+        list: List of dictionaries containing data from the NDJSON file.
     """
-    # Read CSV into pandas DataFrame
-    df = pd.read_csv(csv_file)
-    
-    # Write each row as a JSON object to NDJSON file
-    with open(ndjson_file, 'w') as f:
-        for _, row in df.iterrows():
-            json.dump(row.to_dict(), f)
-            f.write('\n')
+    data = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            data.append(json.loads(line))
+    return data
 
 # Example usage
-csv_to_ndjson('data.csv', 'data.ndjson')
+ndjson_file = 'data.ndjson'
+data = read_ndjson(ndjson_file)
+print(data)
