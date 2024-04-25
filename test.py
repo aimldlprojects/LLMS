@@ -1,19 +1,17 @@
-from elasticsearch import Elasticsearch, RequestsHttpConnection
-from requests_aws4auth import AWS4Auth
+from opensearchpy import OpenSearch
 
 def connect_to_opensearch(region, service, access_key, secret_key, domain_name):
-    # Create AWS authentication credentials
-    aws_auth = AWS4Auth(access_key, secret_key, region, service)
-
-    # Create the OpenSearch connection
-    es = Elasticsearch(
+    # Create OpenSearch object with AWS authentication
+    os_client = OpenSearch(
         hosts=[{'host': domain_name, 'port': 443}],
-        http_auth=aws_auth,
+        http_auth=(access_key, secret_key),
         use_ssl=True,
         verify_certs=True,
-        connection_class=RequestsHttpConnection
+        connection_class="RequestsHttpConnection",
+        region=region,
+        service=service
     )
-    return es
+    return os_client
 
 # Example usage
 region = "your-region"
@@ -22,7 +20,7 @@ access_key = "your-access-key"
 secret_key = "your-secret-key"
 domain_name = "your-opensearch-domain-name"
 
-es = connect_to_opensearch(region, service, access_key, secret_key, domain_name)
+os_client = connect_to_opensearch(region, service, access_key, secret_key, domain_name)
 
 # Test the connection by retrieving the cluster health
-print(es.cluster.health())
+print(os_client.info())
