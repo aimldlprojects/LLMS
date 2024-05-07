@@ -1,57 +1,41 @@
-#!/bin/bash
-
-# Build Docker image
-if docker build -t my-image .; then
-    echo "Docker image built successfully."
-else
-    echo "Failed to build Docker image."
-    exit 1
-fi
-
-# Run Docker container
-if docker run -d -p 8080:80 --name my-container my-image; then
-    echo "Docker container started successfully."
-else
-    echo "Failed to start Docker container."
-    exit 1
-fi
-
-# Push Docker image to registry
-if docker push my-registry/my-image:tag; then
-    echo "Docker image pushed to registry successfully."
-else
-    echo "Failed to push Docker image to registry."
-    exit 1
-fi
-
-# Pull Docker image from registry
-if docker pull my-registry/my-image:tag; then
-    echo "Docker image pulled from registry successfully."
-else
-    echo "Failed to pull Docker image from registry."
-    exit 1
-fi
-
-# Stop Docker container
-if docker stop my-container; then
-    echo "Docker container stopped successfully."
-else
-    echo "Failed to stop Docker container."
-    exit 1
-fi
-
-# Remove Docker container
-if docker rm my-container; then
-    echo "Docker container removed successfully."
-else
-    echo "Failed to remove Docker container."
-    exit 1
-fi
-
-# Remove Docker image
-if docker rmi my-image; then
-    echo "Docker image removed successfully."
-else
-    echo "Failed to remove Docker image."
-    exit 1
-fi
+deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull UI Docker image
+        env:
+          ECR_REGISTRY: ***add ecr registry name***
+          ECR_REPOSITORY: ***add ecr repository name***
+          IMAGE_TAG: ${{ github.sha }}    
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "UI Docker image is pulled from $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+ 
+      - name: Delete Old docker container
+        run: |
+          docker rm -f ***add a container name*** || true
+          echo "Deleted old UI container"
+ 
+      - name: Run Docker Container
+        run: |
+          sudo docker run -d -p 3015:80 --name ***add a container name*** $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "Running UI container"
+     
+      - name: Pull App Docker image
+        env:
+          ECR_REGISTRY: ***add ecr registry name***
+          ECR_REPOSITORY: ***add ecr repository name***
+          IMAGE_TAG: ${{ github.sha }}    
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "App Docker image is pulled from $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+ 
+      - name: Delete Old docker container
+        run: |
+          docker rm -f ***add a container name*** || true
+          echo "Deleted old App container"
+ 
+      - name: Run Docker Container
+        run: |
+          sudo docker run -d --name ***add a container name*** -p 8015:8015  $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "Running App2 container"
