@@ -68,6 +68,7 @@ The error you're seeing indicates that the `podman-compose` package is not avail
 ### 1. **Register with Red Hat Subscription Manager (If Applicable)**:
    If you have access to Red Hat subscriptions, you will need to register your system:
    ```bash
+   sudo dnf install epel-release
    sudo subscription-manager register
    sudo subscription-manager attach --auto
    ```
