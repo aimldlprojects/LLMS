@@ -250,6 +250,9 @@ To install Docker Compose on your server, follow these steps:
    ```bash
    sudo curl -L "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
    ```
+   or get latest:
+   sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
 
 2. **Make the binary executable**:
    After downloading, you need to set the executable permissions:
