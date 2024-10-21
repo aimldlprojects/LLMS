@@ -108,3 +108,65 @@ The error you're seeing indicates that the `podman-compose` package is not avail
    You can now use `podman-compose` to manage containerized applications similarly to `docker-compose`.
 
 By following these steps, you should be able to get `podman-compose` installed and working even without access to Red Hat's repositories.
+
+
+
+
+To use Docker Compose on RHEL 9, you'll need to install Docker first, since Podman is a separate tool. Here’s how to install Docker and Docker Compose on RHEL 9:
+
+### Step 1: Install Docker
+
+1. **Remove any old versions of Docker:**
+   ```bash
+   sudo dnf remove docker docker-common docker-snapshot docker-engine
+   ```
+
+2. **Install required packages:**
+   ```bash
+   sudo dnf install -y dnf-plugins-core
+   ```
+
+3. **Set up the Docker repository:**
+   ```bash
+   sudo dnf config-manager --add-repo=https://download.docker.com/linux/rhel/docker-ce.repo
+   ```
+
+4. **Install Docker:**
+   ```bash
+   sudo dnf install -y docker-ce docker-ce-cli containerd.io
+   ```
+
+5. **Start and enable the Docker service:**
+   ```bash
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   ```
+
+6. **Verify that Docker is installed correctly:**
+   ```bash
+   sudo docker run hello-world
+   ```
+
+### Step 2: Install Docker Compose
+
+1. **Download the latest version of Docker Compose:**
+   Replace `v2.16.0` with the latest version available on the [Docker Compose releases page](https://github.com/docker/compose/releases).
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   ```
+
+2. **Make the binary executable:**
+   ```bash
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+
+3. **Verify the installation:**
+   ```bash
+   docker-compose --version
+   ```
+
+### Notes:
+- Ensure you have `sudo` access and an internet connection to download the necessary packages.
+- If you're still facing issues with registering or using `subscription-manager`, you may want to consult with your system administrator or RHEL support to get the appropriate access. 
+
+After completing these steps, you should be able to use Docker and Docker Compose as intended.
