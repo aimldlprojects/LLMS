@@ -170,3 +170,71 @@ To use Docker Compose on RHEL 9, you'll need to install Docker first, since Podm
 - If you're still facing issues with registering or using `subscription-manager`, you may want to consult with your system administrator or RHEL support to get the appropriate access. 
 
 After completing these steps, you should be able to use Docker and Docker Compose as intended.
+
+
+
+To install `docker-compose` on a RHEL 9 system, you can follow these steps:
+
+### Step 1: Install Docker (if not already installed)
+
+Make sure you have Docker installed. If you haven't installed it yet, use the following commands:
+
+```bash
+# Update the package index
+sudo dnf update -y
+
+# Install required packages
+sudo dnf install -y yum-utils
+
+# Set up the Docker repository
+sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+
+# Install Docker
+sudo dnf install -y docker-ce docker-ce-cli containerd.io
+
+# Start Docker service
+sudo systemctl start docker
+
+# Enable Docker to start on boot
+sudo systemctl enable docker
+```
+
+### Step 2: Install Docker Compose
+
+1. **Download the Docker Compose binary:**
+
+   You can download the latest stable release of Docker Compose with the following command. Make sure to check for the latest version on the [Docker Compose releases page](https://github.com/docker/compose/releases) and replace `1.29.2` with the latest version if needed:
+
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   ```
+
+2. **Set the permissions:**
+
+   Make the binary executable:
+
+   ```bash
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+
+3. **Verify the installation:**
+
+   Check if Docker Compose is installed correctly by checking its version:
+
+   ```bash
+   docker-compose --version
+   ```
+
+### Step 3: (Optional) Enable Docker to run without sudo
+
+If you want to run Docker commands without needing `sudo`, you can add your user to the `docker` group:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+After adding the user to the group, log out and log back in for the changes to take effect.
+
+### Conclusion
+
+You should now have Docker and Docker Compose installed on your RHEL 9 system. If you encounter any issues or have further questions, feel free to ask!
