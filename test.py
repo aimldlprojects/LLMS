@@ -238,3 +238,31 @@ After adding the user to the group, log out and log back in for the changes to t
 ### Conclusion
 
 You should now have Docker and Docker Compose installed on your RHEL 9 system. If you encounter any issues or have further questions, feel free to ask!
+
+
+
+
+To install Docker Compose on your server, follow these steps:
+
+1. **Download the Docker Compose binary**:
+   You can download the specific version you want (e.g., v2.15.1) with the following command:
+
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   ```
+
+2. **Make the binary executable**:
+   After downloading, you need to set the executable permissions:
+
+   ```bash
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+
+3. **Verify the installation**:
+   You can verify that Docker Compose has been installed correctly by checking its version:
+
+   ```bash
+   docker-compose --version
+   ```
+
+This will install Docker Compose on your server, allowing you to use it with Podman as the backend if desired. If you encounter any issues, please let me know!
