@@ -1,271 +1,82 @@
-To replicate the same environment you described, where the Docker CLI is using **Podman** in RHEL 9, you would follow these steps to install and configure **Podman** and alias it to Docker.
-
-### Steps to Set Up Docker CLI with Podman in RHEL 9:
-
-1. **Update the system**:
-   Start by ensuring your RHEL 9 system is updated.
-   ```bash
-   sudo dnf update -y
-   ```
-
-2. **Install Podman**:
-   RHEL 9 comes with **Podman** available in the default repositories, so install it using `dnf`.
-   ```bash
-   sudo dnf install -y podman
-   ```
-
-3. **Verify Podman installation**:
-   After installation, verify that Podman is installed by checking its version.
-   ```bash
-   podman --version
-   ```
-
-4. **Configure Docker CLI to use Podman**:
-   In RHEL 9, the Docker CLI is often aliased to Podman by default. You can confirm this by running the following command:
-   ```bash
-   docker --version
-   ```
-   If it shows something like "Docker CLI using Podman" or returns the Podman version, you are all set. Otherwise, you can create the alias manually.
-
-5. **Create a Docker alias (if needed)**:
-   If Docker is not already aliased to Podman, you can create the alias manually by adding this to your shell configuration file (`~/.bashrc` or `~/.bash_profile`):
-   ```bash
-   echo 'alias docker=podman' >> ~/.bashrc
-   source ~/.bashrc
-   ```
-
-6. **Configure rootless Podman (optional)**:
-   If you want to run containers without root privileges (rootless containers), configure Podman to support it:
-   ```bash
-   sudo dnf install -y fuse-overlayfs
-   ```
-
-7. **Start Podman**:
-   Podman does not require a daemon, so you don't need to start it like Docker. However, you can verify it’s working by running:
-   ```bash
-   podman info
-   ```
-
-8. **Run Docker/Podman commands**:
-   You can now use the **Docker CLI** commands (`docker run`, `docker build`, etc.) and they will work with **Podman** as the container engine.
-
-### Additional Optional Steps:
-
-- **Install `podman-compose`**: If you need Docker Compose functionality, you can use `podman-compose`, which is an alternative to `docker-compose`.
-  ```bash
-  sudo dnf install -y podman-compose
-  ```
-
-- **Set up container networking**: If your application requires advanced networking (like Docker's bridge networking), Podman supports it but may require additional setup.
-
-### Summary:
-By installing **Podman** and configuring the Docker alias to use Podman, you'll replicate the environment where the Docker CLI works with Podman in RHEL 9.
-
-
-
-The error you're seeing indicates that the `podman-compose` package is not available in your current RHEL 9 repositories. To resolve this, you can try the following steps:
-
-### 1. **Register with Red Hat Subscription Manager (If Applicable)**:
-   If you have access to Red Hat subscriptions, you will need to register your system:
-   ```bash
-   sudo dnf install epel-release
-   sudo subscription-manager register
-   sudo subscription-manager attach --auto
-   ```
-
-   Then, enable the necessary repositories:
-   ```bash
-   sudo subscription-manager repos --enable=rhel-9-for-x86_64-appstream-rpms
-   sudo subscription-manager repos --enable=rhel-9-for-x86_64-baseos-rpms
-   ```
-
-   After this, update your repositories and try installing `podman-compose` again:
-   ```bash
-   sudo dnf update
-   sudo dnf install -y podman-compose
-   ```
-
-### 2. **Install `podman-compose` Using Python's `pip` (If Not Using Subscription)**:
-   If you do not have a Red Hat subscription or prefer an alternative approach, you can install `podman-compose` via Python’s package manager `pip`.
-
-   First, install `pip` if it’s not already available:
-   ```bash
-   sudo dnf install -y python3-pip
-   ```
-
-   Then install `podman-compose` using `pip`:
-   ```bash
-   sudo pip3 install podman-compose
-   ```
-
-### 3. **Verify Installation**:
-   After installation, check if `podman-compose` is installed successfully by running:
-   ```bash
-   podman-compose --version
-   ```
-
-### 4. **Run Podman and Podman-Compose Commands**:
-   You can now use `podman-compose` to manage containerized applications similarly to `docker-compose`.
-
-By following these steps, you should be able to get `podman-compose` installed and working even without access to Red Hat's repositories.
-
-
-
-
-To use Docker Compose on RHEL 9, you'll need to install Docker first, since Podman is a separate tool. Here’s how to install Docker and Docker Compose on RHEL 9:
-
-### Step 1: Install Docker
-
-1. **Remove any old versions of Docker:**
-   ```bash
-   sudo dnf remove docker docker-common docker-snapshot docker-engine
-   ```
-
-2. **Install required packages:**
-   ```bash
-   sudo dnf install -y dnf-plugins-core
-   ```
-
-3. **Set up the Docker repository:**
-   ```bash
-   sudo dnf config-manager --add-repo=https://download.docker.com/linux/rhel/docker-ce.repo
-   ```
-
-4. **Install Docker:**
-   ```bash
-   sudo dnf install -y docker-ce docker-ce-cli containerd.io
-   ```
-
-5. **Start and enable the Docker service:**
-   ```bash
-   sudo systemctl start docker
-   sudo systemctl enable docker
-   ```
-
-6. **Verify that Docker is installed correctly:**
-   ```bash
-   sudo docker run hello-world
-   ```
-
-### Step 2: Install Docker Compose
-
-1. **Download the latest version of Docker Compose:**
-   Replace `v2.16.0` with the latest version available on the [Docker Compose releases page](https://github.com/docker/compose/releases).
-   ```bash
-   sudo curl -L "https://github.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-   ```
-
-2. **Make the binary executable:**
-   ```bash
-   sudo chmod +x /usr/local/bin/docker-compose
-   ```
-
-3. **Verify the installation:**
-   ```bash
-   docker-compose --version
-   ```
-
-### Notes:
-- Ensure you have `sudo` access and an internet connection to download the necessary packages.
-- If you're still facing issues with registering or using `subscription-manager`, you may want to consult with your system administrator or RHEL support to get the appropriate access. 
-
-After completing these steps, you should be able to use Docker and Docker Compose as intended.
-
-
-
-To install `docker-compose` on a RHEL 9 system, you can follow these steps:
-
-### Step 1: Install Docker (if not already installed)
-
-Make sure you have Docker installed. If you haven't installed it yet, use the following commands:
-
-```bash
-# Update the package index
-sudo dnf update -y
-
-# Install required packages
-sudo dnf install -y yum-utils
-
-# Set up the Docker repository
-sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-
-# Install Docker
-sudo dnf install -y docker-ce docker-ce-cli containerd.io
-
-# Start Docker service
-sudo systemctl start docker
-
-# Enable Docker to start on boot
-sudo systemctl enable docker
-```
-
-### Step 2: Install Docker Compose
-
-1. **Download the Docker Compose binary:**
-
-   You can download the latest stable release of Docker Compose with the following command. Make sure to check for the latest version on the [Docker Compose releases page](https://github.com/docker/compose/releases) and replace `1.29.2` with the latest version if needed:
-
-   ```bash
-   sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-   ```
-
-2. **Set the permissions:**
-
-   Make the binary executable:
-
-   ```bash
-   sudo chmod +x /usr/local/bin/docker-compose
-   ```
-
-3. **Verify the installation:**
-
-   Check if Docker Compose is installed correctly by checking its version:
-
-   ```bash
-   docker-compose --version
-   ```
-
-### Step 3: (Optional) Enable Docker to run without sudo
-
-If you want to run Docker commands without needing `sudo`, you can add your user to the `docker` group:
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-After adding the user to the group, log out and log back in for the changes to take effect.
-
-### Conclusion
-
-You should now have Docker and Docker Compose installed on your RHEL 9 system. If you encounter any issues or have further questions, feel free to ask!
-
-
-
-
-To install Docker Compose on your server, follow these steps:
-
-1. **Download the Docker Compose binary**:
-   You can download the specific version you want (e.g., v2.15.1) with the following command:
-
-   ```bash
-   sudo curl -L "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-   ```
-   or get latest:
-   sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-
-2. **Make the binary executable**:
-   After downloading, you need to set the executable permissions:
-
-   ```bash
-   sudo chmod +x /usr/local/bin/docker-compose
-   ```
-
-3. **Verify the installation**:
-   You can verify that Docker Compose has been installed correctly by checking its version:
-
-   ```bash
-   docker-compose --version
-   ```
-
-This will install Docker Compose on your server, allowing you to use it with Podman as the backend if desired. If you encounter any issues, please let me know!
+(00:01) hello everyone the wait is over welcome to the day eight of the llm preing course where today is the day we are going to build GPT 2 from scratch yes we are going to pre-train gbt2 from scratch and I'm going to follow the pipeline which I have explained in day s but with a Twist rather than starting with the data set here I'm going to start with the more model and then I'll move on to the data set and then creating the training pipeline so this will be a two-part uh day right now day eight will be about model building and
+(00:40) Day N will be about creating of the data set and then uh creating the whole training Pipeline and then uh training it so this will be a two-part day um let's start with building the model all right so let me put an image of GPT at the right for a reference so right now we have a reference of what is the architecture we need to start with all right let's start with the most complex component out of all of these component which is nothing but our M multi-ad attention so let me Zoom that and keep that so this is the
+(01:24) component which we need to start with first all right so let me first take some imports import torch and then uh for neural network we have some other Imports like from torch.nn import no from import torch nns NN import torch. nn. functional as f okay so these are some uh three important inputs let put it let's put it that way okay let me rename the f file as well um GPT 2 model okay so here in this gpt2 model we'll
+(02:27) have gpt2 model model let's call it a web model and you will understand why and uh for those people who find why I keep it as web model uh you will have a surprise later okay but yeah um let's keep it web model for now the name and here we'll do a diff Dunder in it super init is required these are not required so let's put a PA here okay this is the architecture which we need to fill and what are the classes we want okay this is the overall model class we'll fill all of those okay the components goes this way okay
+(03:28) we need layer normal class CL so that will be probably one of the last classes the first one would be a m multi- detention class or rather A multi-ad detention class because uh the mask is just a parameter which is provided multi detention class so here here also will'll just create multi head attention nn.
+(04:10) module def Dunder in it maybe we can this is not needed this also is not needed so here also we'll just keep uh def forward and then we'll have it as pass okay so we need to import that here it should have been like this def forward sells pass okay so what all do we have here and then we have feed forward let's create something for that um speat forward class so basically right now we are just uh creating a bone like you know a structure what we need to
+(05:15) do this will help us to you know think better n module def D in it where I need to remove these this is not required is this here yeah looking good looking good now uh dep forward self and then another pass right so layer n is still there right so let's C Cy this I should have done that from before people who have thought by now that like you know why wasen hasn't uh just copy pasted uh things please let me know in the comments because you are uh better than me in this um specific scenario okay and if you are wondering
+(06:22) about embeddings right uh you need not Wonder actually because uh the embedding which is used in GPT are just um you know nn. embeddings basically absolute embeddings all right so it will be easier for us to uh do that in the transform model itself so in the gpd2 web model itself we'll do that and if we feel we can also add another component like embedding that is also something which we can uh do all right so maybe we can have that um embeddings class okay class input embedding and then module here it will be ah I'm repeating
+(07:17) the same issue copy paste embeddings input embedding okay so these are the things which we need to uh initi like you know complete in this video okay if we complete this architecture uh we are completed with building an nlm by ourself let's see uh one by one okay so let's start with the embedding itself all right so where is the embedding class here it is what all do we need first we need something called token embedding the indentation is not that good actually for some reason self.
+(08:08) token embedding is equal to nn. embedding in NN embedding what all do we need is oh I left something very important GPT config class what what is the model name gbt2 web and they add it as config here first we need to actually um provide our configurations let's see what are the configuration which are required right now so um let's start with something like a cell dot oh yeah um think with Dunder itself it's possible maybe we
+(09:13) can it is better we have it as a separate file I'll create something called a gpd2 config py where we can have all the constants ready okay what are the things we have work have size that is important so that is 50257 all of these are standard okay context length uh what we what we are going to train um for now let's keep it 26 if possible we'll extend it okay embed Dimension or we'll call it as D model usually D model is let's have it as 512 um number of attention heads let's have it as eight number of
+(10:05) layers maybe both six okay let's keep six for both um drop out will be 0.1 Dropout probability okay these are some of the configs we require because for example just see now here here I'll import those from gpt2 config import Star I need to import all of those values and here I'm going to use that for embedding if you see we require the number of embeddings which is your workup SI okay for how many number of uh tokens you need embedding that is your work SI basically so here I'm going to initialize that self. wab
+(11:05) size is equal to wab size and then we can call that here okay and then the next one is D model okay which is the embedding Dimension self Dot so right now we are getting our D Model D model is D model and then we'll also provide that because our embedding Dimension is important right I hope the size looks good now uh with this on the side I'm not sure if it was clear before so um this looks good better now let's have the position embedding positional um embedding will be and like
+(12:11) you know nn. embedding again but here just guess now like you know what are the things you will be providing if you guessed self dot um what was the name I kep context length if you kept it as self. context length then yes you are right because we are encoding the position right so self. context length will be equal to context length and then we'll provide that here along with that self.
+(12:51) D model that is no magic here right so it is going to be pretty simple for us right now okay so in everywhere we need t. device so device is equal to Cuda if T dot Cuda do isore available else CPU okay so device is very important everywhere um actually this definition should not be here it should be rather here import torch then we'll have it here device right now in every way then that will be imported self.
+(13:46) device equal to device that ensures that you don't run into any issues so let's see uh what we need to do for that now in the forward section okay so here uh uh it will be input IDs okay let's have it as X okay so it is going to be bat size and then sequence length why because it will be uh like you know for example one sentence with 10 tokens that's all the embedding is not still computed so we are going to compute that so only it will have two sh uh two uh Dimension so we'll have a x.
+(14:31) shap now we need to create token embeddings token embeddings let's have it as X token embedding okay X token embedding is equal to self do token embedding of X okay and then here what we can do is um we need to initialize initialize another thing which is self. positions which will be um I think I think it is better if we do it in run time itself yeah so what we can do is um positions will be equal to torch dot a range of arrange is a function which will create numbers from start till end okay so right now it
+(15:37) is like you know from zero to max length right so we need to provide that so it is going to be um self do context length no not context length self do sequence length um yeah sequence length is what we need to provide here and then you need to provide device here which will be self. device now you have the positions you need to embed this okay cell um let's have it as position embeddings X position embedding will be equal to self do position embedding of positions okay so now um we need to add both of these okay so
+(16:36) X input embedding will be equal to X token embedding added to X position embedding okay and here you need to note something which is we we haven't added a Dropout yet usually we need to add a Dropout because uh that regularizes things a bit so we'll initialize that as well okay um but if we have the same name for everywhere we'll just get confused so we'll have it as self.
+(17:18) Dropout for embeddings okay and here it is going to be nn. Dropout and already we have the Dropout probability so it is going to be self. P equal to dropout p and then we need to provide that here self. P that's all okay so now the input embeddings needs to be normalized so X input EMB let's put return return here itself return return self do Dropout embedding of X input embedding okay now we are uh done with creation of uh input embeddings next let's go on with multi-ad attention Okay I said we will start with that uh but
+(18:03) you know input embeddings demanded it so we just did it let's do with uh you know multi-ad attention now with with multi-ad attention what are the things we require let's see that okay so here if you remember from our uh Transformers construction itself so it will take something like D model which is our embed dimenstion it will be of in type num HS so number of attention HS it wants so it will be also int what is the context length you want so that will be again an INT value drop out so actually what you can do is
+(19:03) you can hardcode these from here as well okay that is also something which is a very good practice but you know uh usually we keep input embeddings outside uh all of these will be encoded inside that's why I kept it but you know uh we can also do this as well uh you know later like for example keeping this here that will look neater actually okay vo cap size D model context length um device and then Dropout P okay so if I do this it will be even better to look actually because anyway you want to initialize these parameters from the uh
+(20:03) like you know gpt2 model so it will look better let's keep it that way okay so workes will be an INT value D model will be an INT value um context length will be an in value device will be torch. device and then Dropout P will be a float value okay now Let's uh start with multi detention again again again we are just jumping uh sorry for that first thing we need to see is um here write an assessment statement to make sure that D model is divisible by the number of H so for example if I go python um what was the consideration we had
+(21:04) let's see if that works actually first 512 person 6 so the remainer is two which means it won't work let's try for eight it is zero which means it will work as simple as that okay because you're are going to split your embeddings across the heads right so it is very important that your embedding Dimension is divisible by the number of heads so let's keep you know both of these same number of layers also eight uh if you keep six as well it will work for number of layers but number of attention hits needs to be eight okay so
+(21:51) yeah right now uh this should work for us here uh with assert you need to provide a statement as well where if this statement fails what it will say is D model is indivisible or something like you know D model should be divisible by num page something like this so that you know if you click some other config you will just get a warning stating that you know this is an issue for you okay without even executing the whole and then wasting some time so let's add all of those values in here so it is going to be self
+(22:36) do D model will be equal to D model and then self dot embed Dimension will be equal to self do embed Dimension um not embed Dimension num hits sorry is going to be num H equal to num H self. context length equal to context length and then self. P let's have it as Dropout attention Dropout G equal to dropout okay so these are the things which is required um right now self.
+(23:36) qkv why we are initializing like that because in the official implementation as well all of these would have been uh like you know created together as a single one so we'll also try to do that right so it is going to be nn. linear where it will be D model comma D model cross 3 okay basically we are seeing that you know it will be three so that we'll be splitting at that Dimension okay and here we need to provide a bias as well uh stating that it is false okay we don't need any attention bias and then we need uh
+(24:26) projection um actually what uh in GPD official name would be something like know C ATN this is how it will look like actually um maybe we'll do it in one future time where we'll convert this architecture in such a way that this is compatible to hugging pH we'll do it in some time okay so let me know if you want that in the comment section I'll try to do that self. projection will be equal to nn.
+(24:53) linear of um D model to D model okay basically this is to uh comprise all of this information together okay um next we have self do attention Dropout equal to attention Dropout um oh we already initialized that right um I think it should be simple yeah this is good now let's implement the forward function here we'll get X okay that is usual what are the things we required here bat size sequence length and um embedding Dimension or we usually call it as D model right
+(25:59) so D model both of all of these three are there so why because you have embedded it already right so embedding Dimension will be added um and then it will be provided to the m multi head self attention basically that is what we are creating here so it will have three dimensions rather than a two Dimension how it was for embedding okay now first we need to uh make this you know with weight layers okay we need to add some weights to this so we need to call self.
+(26:35) qkv of X so basically right now it would be something like you know this bat size sequence length D model will be converted to bat size sequence length 3 cross D model okay so these will be the things there now we'll make this in such a way that this is you know available for multiple heads okay so for that we'll call qkv equal to qkv do view vew is basically like a reshape function basically what is the dimension V
+(27:38) require is from this okay I need to take out this this needs to be converted like bat size and then it should be num tokens for query key value so three and then number of HS and then head Dimension okay so we haven't computed the head Dimension um let's compute that okay so it should have been here say self do head Dimension will be equal to self DOD model flow divided by self do num hits okay so that was also something which is
+(28:45) required now here if you see um we need to do this right how are we going to do this we need to view it in such a way that it should be bat size first we already have that so next we need the num tokens right number of tokens is nothing but your sequence length so it is going to be sequence length and then um it should be three hardcoded and then self.
+(29:21) num hits and then self. head Dimension why is this even possible first if you see it would have been three cross D model which will be something like a three comma which you can make it actually if you do it step by step right you can also make this where you will get this input okay and then you will convert it as three comma D model but we are doing it in a single step okay that is what is happening here so right now it is three comma number of hits comma uh head Dimension so you have uh the values for qkv together but you
+(30:01) know we need to have it as three as the first because you then only you'll be able to separate as q k v okay so for that what you need to do is so basically how I require here is I'll show you from here it should become something like this okay I'll change it from here three comma bat size comma sequence length comma number of tokens comma head Dimension okay basically this three should come first right so that is what is required so for that what you need to do is use a function known as qkv do permute there
+(30:45) is a function known as permute in torch where what you can do is you can just change the dimension okay so for example three was at the second dimension right 0 1 2 so two will become first I need 0 next and then I need one right so one and then what I have here two is already done so three right so it will be three and then four basically the uh array will be rearranged okay so it will be 20 um just let me check first once it was like this 20 yeah uh that is where I got confused I was just uh like you know thinking so
+(31:41) it should have been 20314 okay why because 2 is um basically the number which is qkv but you need to split it across head right so it would have been two back size and then the number of HS to which the tokens will be applied okay so it would be like number of heads first and then sequence length for that okay so this is how it will be splitted now now what we'll do is we'll just have it as query key value from qkb okay now how it will be looking like is I'll just copy this it will be like three star all of these okay for each of those
+(32:46) there will be a bad size num head sequence length head Dimension kind of a structure all right so here we'll see if there is a Dropout or not okay so we have a Dropout here okay always there is going to be a Dropout um I need to put as float here so what we are going to do is instead of writing scale do production do product attention by ourself which will be like you know a learning cve for us but it is not very efficient we have already seen how to write that right like you know torch has optimized it better in something known as NN
+(33:31) functional okay in functional itself if you see F do scale. product attention it will have a value and if you see here they would have implemented it okay they would have implemented it um and that is what we are going to use okay you can see what are the things it requires query we have it key we have it value we have it attention mask uh we do not need to provide um because if we say is Cel it is going to work and then uh Dropout probability uh it is going to be something which we are going to provide is C is going to be
+(34:12) false okay these are not required all right so it is going to be um let's put it as attention uncore X okay X is computed with with attention basically this is a context Vector which has some attention to it so NN do functional um already we imported it right so it will have it as F do scale. product attention of where equal to qu key equal to key value equal to Value attention mask equal to none we'll see what we need to do like you know if we want to make an attention attention mask because if you see when
+(35:15) you send is Cal to True with the context length and all right it will try to generate the mask by itself basically inside um Dropout p uh will be self dot Dropout attention Dropout and then is Cel we'll get that as well from the user basically isos is going to be true right for us we are not building Transformer so let's have it as isal to True okay so now we have computed the attention but if you see this attention what shape it will have is it will have uh something like a back size numb head uh uh sequence length
+(35:59) head dimmension similarly like how it was before but we need to you know combine those together so that it is concatenated as from the multiple head to the single head okay that concatenation step how it will look like is uh conat ATN X will be equal to ATN X do transpose of 1 comma two why these need to be translated transposed frequency L should be first num head should be second so that num heads and head Dimension will be combined together okay we need to make sure that those are contiguous okay because we are combining
+(36:43) it from different places so those should be continuous and then we'll view it in such way that bat size comes first sequence length comes second and then it will be um D model okay where do we do we have D model here yeah um so it would be D model okay so basically we have combined it now we need to send it via projection ATN uh projection X will be equal to um self do projection of concat ATN X okay right now I have my attention completed so I just need to return this so here I didn't mention it right so here it will be a two-step
+(37:48) process it will be bat size num head sequence length head Dimension to B size sequence length num head Dimension num head head Dimension which will be combined to B sequence in D model okay this is how it works as far as the attention is concerned all right um here it is just a linear layer so the shapes are not going to change okay now let's see how to implement the feed forward so right now we are in uh feed forward let's do layer num later you know like that is a common thing right let's have it later so for feed forward
+(38:43) what are the things we require let's see that right so here you will need something like a D model and then you need something like a dff okay so what is dff in D model we say embedding Dimension right there is a dimension specifically for feet forward itself which people usually call it as intermediate Dimension usually it is D model star four times okay I'll have it as relative but you know that applies only if your model is very small if you go for like you know a big model it will have 496 you need to have 16,000 that is not
+(39:22) something very feasible um but you know like it is usually larger the better because you know uh when it is a larger Network it can understand the information which the M multi-ad detention has uh captured better okay um so we need D model and dff other than that we don't need anything actually um so now how uh we can do this is it will have two linear layers okay self do fully connected layer one will be nn.
+(39:56) linear of um self dot oh I should have initialized that forgot it self do D model equal to D model self. dff equal to dff okay so that is feet for Dimension let's have it there um so it is going to be self do D model cross self. dff and the second one will be the straight opposite okay uh fc2 will be self. dff comma self.
+(40:48) D model you up projecting it you you down projecting it it is better if you write it you know like this up projection down projection that is where you'll have those like you know understanding clearly that this is how it works okay so we have self mod uh up projection and down projection along with that we need a Dropout I forgot that so Dropout would be there um so this is going to be an INT value this is going to be an INT value and this is going to be a float value right so self Dot uh Dropout will be NN do Dropout of cell. Dropout this is like
+(41:39) the thing which we did with um like you know input embedding let's just put it as F of drop out like how we are maintaining it right um okay we haven't initialized that self Dot Dropout equal to Dropout okay so self. for Dropout is also ready now we need to uh add another thing which is self.
+(42:12) jello jell is acation function which is used in uh the paper so we'll also use that nn. jelu um how it works is basically you have your input uh X okay I haven't added the type there t. tensar where is tensar get this I should have added those there as well X to torch pensar do I have anywhere else sorry for the disturbance cost um I'm just adding type casting everywhere so that you know uh it will be actually easier you know so if for example there I was doing something like a x. shape right if I did now it will
+(43:09) show automatically that is a better way like you know for example it was qkv here if I had something like a qkv is to tor. tensar we'll see a difference now see qkv do view qkv permute it is always better to have a type casting because uh with vs code right it will give you the functions directly it will make your life easier so I usually do that a lot um so it is going to be to.
+(43:42) tens so given an input it is going to be very simple we are not going to get back size sequence length nothing okay so cell dot no up X will be self Dot a projection of X and then we'll uh send it to jelu self do jell off up projects and then uh down Pro X will be self dot down projection of projection X and now we'll drop out it um FF out will be equal to self do FF Dropout of down projection X and then we'll return that return FF out okay so right now our attention is done
+(44:51) our um feed forward is done so basically it would have been uh at the dimension so whatever it was you know uh so let's say it was um D model right so it would have been something like 512 converted to 248 because that is what is our uh dff because it is basically the four times okay and then another converted to 512 and the good part is you'll learn something out of this that is why it is there now let's see how you can implement the layer Nom class Okay add and layer Nom is different okay adding
+(45:33) is something uh different and add layer n is something different okay right now we are just seeing how to do layer n Okay add and layer Nom will do it uh in the model itself directly so for layer Nom uh the function which we are going to use is a simple uh like you know zcore function okay so for that you will find the mean the variance and then uh you'll do a standard root for variance so that you'll get the standard deviation but here with that we'll add an Epsilon so it will the formula would
+(46:12) be something like this okay this is what we'll be implementing here x minus mean by standard uh deviation okay that's all and then here we'll just add uh some other values after this okay so let's say you get an output here you'll be doing um scaling it is like Alpha star X Plus beta okay so it will be Alpha star um let's say it is NX it will be converted plus beta okay this is the formula basically for layer n so for layer n uh you need one parameter which is EPs and that is float okay and here EPS
+(47:12) value will be like Epsilon value basically 1 eus 5 or 1 eus 6 is a very common value okay you can also hardcode it there as a keyword argument rather than a just normal argument because if it is not provided it will take a default value right so here we need two things one is uh Epsilon being initialized along with that self do alpha which will be NN do parameter so these parameters are learnable okay that Alpha and beta are learnable so if you are wondering how the theory of all of these work please make sure that you
+(48:01) watch the Transformers Theory video because I've explained each and every component in very much detail as much as possible okay so how uh n parameter will be initialized with is it will be just tch. ones of um D model that needs to be provided here I forgot that um so it is going to D model this to int comma Epsilon why I put D model before is not because it is a very important value U because arguments come first and then keyword argument okay if you put uh D model first and then uh see Epsilon first and
+(48:45) then D model second with uh values for Epsilon you will get error okay um so we need to get the model so it will just here what it will do is it will just create a find 12 number of ones so it will be the same for beta basically the normalizations will happen uh at the embedding Dimension okay so here what we need to do is first find the mean right so mean will be equal to x dot we need we need to provide X here x is to torch do 10r if I if I see now x.
+(49:25) mean simple Dimension will be minus one because at the last Dimension uh which is emiting dimension only I need uh mean so I keep the dimension to true the variance will be equal to X do V so this x do V function will compute the variance okay again we'll be doing it at Dimension minus one which is the embedding Dimension which is the last Dimension basically and then we'll uh set unbiased to false okay and then keep Dimension to True okay so here we are going to normalize the X right so X normalized will be equal to see the
+(50:17) formula x minus mean if you remember the board Mass rule uh subtraction will happen later but xus mean should happen together so we need to add a bracket there xus mean t. square root of here it should be square root okay uh because standard deviation will be square root of variance but here just uh rather than uh square root of directly to variance We'll add something like a Epsilon value to it okay soilon um let's put it as learned X normaliz that that would be a good way to put it because we are adding two learnable
+(51:01) parameter for that right self. Alpha star X normalized Plus 12. beta this is where the normalization becomes a learned normalization okay learn X normalized okay so this is how um the layer Norm happens so right now if you see our embedding is done layer is done ped forward is done multi- detention is done we are coming into the final and most interesting part which is to construct this architecture here based on all of the things we have created here okay this is where it is going to be very interesting all right so first here I
+(51:46) need to take out all the values which are there in config okay here I just put it as a two tab that is when it will become easy for me to initialize things okay self. work app size will be tab size um self do context length will be equal to context length s do what is it D model yeah D model will be equal to D Model 12 do num H will be equal to in h self.
+(52:42) num layers equal to n layers and then s do uh Dropout probability will be equal to Dropout probability self do feat forward Dimension will be equal to feat forward Dimension and just uh it is boring you know like it is always boring self dot um APS Epsilon equal to Epsilon do device equal to device okay every initialization is done finally okay now coming on to initialization of those which is self dot yeah uh just now I forgot if you
+(53:52) remember this will be a stack right that is why I want to add that here so it will be uh something like GPT block we need to create that okay it will be GPT block which we need to create right now oral model classes later till the fun part remains actually GPT block class class GPT block P do module death ther in it of self super dot Dunder in it so here we need to First integrate those uh these are not required right now we need to integrate uh those here so here what we are going to do is we
+(55:05) are going to just combine these blocks alone okay that is what we are going to do here what are the things we required actually um here we don't require Dropout in feed forward okay um let me put it as Fe forward out here it because those uh dropouts will be done in here itself okay we don't need Dropout here I'll just take this out um yeah looks good so we need to first take out all these values right so what I'm going to do is I'm just going to copy these okay paste it here because I'm not going to provide the
+(55:59) parameters again right so I'm just going to take all of these have it here and then initialize my uh architectures self. multi head attention will be equal to multi head attention of self. D model what other the thing self. h self do context length self. Dropout okay so these are the things required and then for feed forward what are the things again which is required here feed forward which will require self DOD model self dot Dropout oh no dff I guess yeah um here work won be required I
+(57:03) guess because we are not initializing embeddings okay and then we require two layer NS okay so it is going to be cell dot layer Norm one will be layer n which we created now sell do D Model 12 do Epsilon we are initializing it as two two stages because um if you remember those are learnable right so that is why here you can see layer number one layer number two maass mul retention feed forward all are done now this flow which you are seeing right now we need to implement that in the forward okay let's see that def uh
+(57:53) forward self and X which will be a torch tar here first what we need to do is um take the x value like you know before Norm something like that before Norm X will be equal to X um self dot NM one of x X um X nor X1 n probably X nor one we'll have it as XOM one okay and this XOM one let's have it as X itself it will be easier to maintain the stage actually um X here and then we'll send that X to S do multihead attenion of X and here if you see it will be bad say sequence length embedding dimension the same
+(58:56) shape will retain uh here after that is not an issue that is one of the main advantages actually here we need to initialize a Dropout okay so self. Dropout uh let's put it as n Dropout what it is I'm not sure uh let's have it as add the Ln drop Okay add and drop because it is used in add and layer Nom section self dot drop out P okay so I need to call that 12 dot add layer n drop of X okay so right now here we have okay we got X before Norm we normalized it we sent to our tension we have got the outut which is normalized now we need to
+(1:00:00) add that with the before Norm okay we have a before Norm here basically um actually I guess the norm one shouldn't be done here let's see okay maybe I think um before add would be something because you know U this is a confusion where like you know every time time I Implement I'll get this confusion whether I need to add before or after let's see if this kind of an architecture works if not we'll uh go for uh having this before NX later okay um before NM um after attention Okay uh before n after
+(1:00:57) attention here I need to First add that I left that so X will be equal to X+ before n i before n x okay so that is how uh X will be here before Norm after attention um I think even here before attention this is good I'll have it as before FFN that is better okay now it will be layer n two um of x s dot feat forward of X add layer Norm drop of X and the X will be equal to um before n before FFN here it is okay this is how it will be combined okay and finally
+(1:02:01) that softmax and we'll do it in the main function okay right now we I'll just return the X here okay we need to replicate this for Num that is why uh this is skipped as a separate block so s. GPT block will be equal to GPT block and then other than this what are the things you require we will require a final layer Norm self do [Music] final layer n um will be equal to NN do layer n why NN layer we have already initialized it right layer n of um self DOD model okay so here if you see the GPT block is a single block right but like I said this
+(1:03:02) will be for end layers right so we'll just replicate it all right so what we need to do is we'll just call something called nn. sequential of here uh we need this we'll have it for later okay actually it is always fun to you know uh combine together rather than coding it from scratch um the fun but is always when you combine these things together because that is where you feel like you are really constructing the architecture um so how much we want so for underscore in range so basically this star will replicate okay so for uh
+(1:03:42) range the num layers self. num layers okay for the number of layers we'll have the number of blocks okay star will uh make sure that all of these are combined together in sequential and sequential is like you know one will be sent to another you need not manually uh send one layers to another so thanks to um thoughts for that self do final projection let's put it that way here you can see right there is a final projection U this place right actually it should not be embedding T it should be named as projection okay so the
+(1:04:19) embedding T it is named as like that because that is where you will convert your embedding to wab okay so how it will look like is something like this because here you are com combining like you know making your uh tokens as embedding it is the reverse here you're uh making your embeddings as token that is why it is named as embedding transpose but it's not like just that uh it is like nn.
+(1:04:45) linear of um self. D model across s. wab SI okay and make sure that the bias set Falls here okay here I think I need to provide that here as well if I'm not wrong where was that feed forward let's see if there is a training issue we'll understand uh usually if you keep bias right uh there will be an issue while training um so how the forward of the Transformer will look like you know first we'll compute the embeddings right so we need to take that as well I didn't take that here right so it should be self. input
+(1:05:34) embedding will be equal to input embedding of um self. work app size s.d model s. context length it is just going on but it has been fun building it from scratch just let me know how much you enjoyed uh today you know because I enjoyed this very much implementing it from scratch so how are we combining it first you'll get the input IDs right so let's put it as input IDs okay it will be a to T list actually um T do tar here what we'll do is we'll compute input embs let's put it that way because that is only going to make
+(1:06:26) sense input embedding of input IDs now we are come we have like you know computed the input embeddings now it is time to pass through the Transformer blocks which we created which is the GPT blocks here okay so the GPD blocks are going to be uh providing something like maybe GPD out let's just put it that way gbt out is equal to self.
+(1:06:57) gbt blocks of input MX so that will give us a value okay so here we are going to now say like you know see uh the embeddings are going to be projected to the tokens again so um usually we call it as logits okay so I'm going to call it from now there is going to be normalization that is later okay logits is equal to um self Dot here actually we need to First do a normalization uh GPT out is equal to self.
+(1:07:36) final layer Norm of gbt out okay and then here logits will be equal to self. final projection of gbd out okay so here we have the logits we'll just return the logits if you're wondering where the soft Max happens the Max happens when you do decoding that will be in the subsequent videos okay in this video which is day eight we have just implemented uh gbt2 model from scratch okay in the next video which is day nine we'll create a torch data set a torch data loader we'll collect some data sets from internet um mainly from hugging
+(1:08:22) face which are preing data sets and then we'll just just process it we'll make sure that we write a pipeline which is um good enough to handle large amount of data set and then what we'll do is we'll create a training Pipeline and then we'll create uh the model which is pre-trained for a specific use case at the later part okay this is the way forward and yeah uh right now we are just moving on to Advanced uh points okay so yeah guys I hope you like this video If you like this video please the
+(1:08:56) like button share it with your friends if you haven't subscribed to the Channel please hit the Subscribe button hit the Bell icon I'll see you all in another amazing video if you like me calling amazing um please hit the like button okay cheers
