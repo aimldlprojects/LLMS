@@ -1,0 +1,1 @@
+I am developing a text to sql application using snowflake and gpt-4, python. tell me the best practices that i can do to get the keywords from the user question and map to correct columns to generate the sql query.
