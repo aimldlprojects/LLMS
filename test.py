@@ -1,58 +1,44 @@
-server {
-    listen 80;
-    server_name gmgp-theia-dev.pfizer.com;
+import logging
+import logging.config
+import os
 
-    # Redirect HTTP to HTTPS
-    return 301 https://$host$request_uri;
-}
+def setup_logger(name, log_file="app.log", level=logging.INFO):
+    """
+    Creates and configures a logger.
 
-server {
-    listen 443 ssl;
-    server_name gmgp-theia-dev.pfizer.com;
+    Args:
+        name (str): Name of the logger.
+        log_file (str): File to which logs should be written.
+        level (int): Logging level (e.g., logging.INFO, logging.DEBUG).
 
-    ssl_certificate /etc/nginx/ssl/gmgp-theia-dev.pfizer.pem;
-    ssl_certificate_key /etc/nginx/ssl/gmgp-theia-dev.pfizer.com_key.pem;
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    # Create a directory for logs if it doesn't exist
+    log_dir = os.path.dirname(log_file)
+    if log_dir and not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 
-    # Serve React frontend from /usr/share/nginx/html
-    location / {
-        root /usr/share/nginx/html;  # React build directory
-        index index.html index.htm;
-        try_files $uri $uri/ /index.html;
-        add_header 'Access-Control-Allow-Origin' '*';
-        add_header 'Access-Control-Allow-Credentials' 'true';
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-        add_header 'Access-Control-Allow-Headers' 'Accept, Content-Type';
-        client_max_body_size 200M;
-    }
+    # Define the logging format
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
 
-    # API Requests - Proxy to the backend
-    location /api/ {
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_pass http://backend:8010;  # Update backend container name and port
-    }
+    # File handler
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(formatter)
 
-    # Favicon request handling
-    location = /favicon.ico {
-        access_log off;
-        log_not_found off;
-    }
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
 
-    # Static files
-    location /staticfiles/ {
-        root /usr/share/nginx/etl-dashboard;
-    }
+    # Create logger
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
 
-    # Media files
-    location /media/ {
-        root /usr/share/nginx/etl-dashboard;
-    }
+    return logger
 
-    # Handle 50x errors
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-        root /usr/share/nginx/html;
-    }
-}
+
+
